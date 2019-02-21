@@ -11,4 +11,17 @@ eureka:
 
 spring:
   application:
-    name: demo-feign
+    name: userLogin
+  redis: 
+    database: 0
+    host: localhost
+    port: 6379
+    password: 
+    pool:
+      max-active: 6
+      max-idle: 6
+      max-wait: -1
+      min-idle: 0
+    timeout: 3000
+  
+    
