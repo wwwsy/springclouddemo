@@ -15,6 +15,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.rocketmq.client.exception.MQBrokerException;
+import com.alibaba.rocketmq.client.exception.MQClientException;
+import com.alibaba.rocketmq.remoting.exception.RemotingException;
+
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import wsy.userLogin.controller.result.ResultAPI;
@@ -31,7 +35,7 @@ public class LoginController {
 	@Autowired
 	private UserService userService;
 	@PostMapping("/user")
-	public ResultAPI<?> Jedis(String name,String password,HttpSession session,HttpServletResponse response) throws NoSuchAlgorithmException{		
+	public ResultAPI<?> login(String name,String password,HttpSession session,HttpServletResponse response) throws NoSuchAlgorithmException, MQClientException, RemotingException, MQBrokerException, InterruptedException{		
 		User user = userService.queryByName(name);
 		if(user==null||!user.getPassword().equals(SecurityPassword.String2Md5(password))){
 			return ResultAPI.error("用户名或者密码错误");
@@ -40,7 +44,6 @@ public class LoginController {
 		String string = JSON.toJSONString(session);
 		String token = UUID.randomUUID().toString().replace("-","");
 		jedisUtil.set(token,string);
-		System.out.println(token);
 		Cookie c = new Cookie("token", token);
 		c.setPath("/");
 		response.addCookie(c);
